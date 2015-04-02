@@ -50,15 +50,15 @@ module Fluent
       source = record
 
       key.split('.').each do |v|
-        if source[v.to_sym]   
-          source = source[v.to_sym]
-        else 
+        if source[v] || source[v.to_sym]
+          source = source[v] ? source[v] : source[v.to_sym]
+        else
           record['break'] = true
           source = nil
           break
         end
       end
-      
+
       if source
         hash = {}
         city = ''
@@ -67,6 +67,11 @@ module Fluent
           exploded = source.split(":|")
           source = exploded[0]
           city = exploded[1]
+
+          if city.is_a?(String)
+            city = Base64.decode64(city)
+            city.force_encoding('utf-8')
+          end
         end
 
         array = source.to_i.base62_encode.gsub(SEPARATOR_DASH, '-').gsub(SEPARATOR_DOT, '.').split(SEPARATOR)
@@ -76,7 +81,7 @@ module Fluent
         hash['continent'] = array[2] ? array[2] : ''
         hash['countryCode'] = array[3] ? array[3] : ''
         hash['province'] = array[4] ? array[4] : ''
-        hash['city'] = city ? Base64.decode64(city) : ''
+        hash['city'] = city
 
         target = sub_key ? (record[sub_key] ||= {}) : record
 
@@ -86,5 +91,6 @@ module Fluent
     rescue => e
       log.warn("out_decode_location: error_class:#{e.class} error_message:#{e.message} tag:#{tag} record:#{record} bactrace:#{e.backtrace.first}")
     end
+
   end
 end
