@@ -2,7 +2,7 @@ $:.push File.expand_path('../lib', __FILE__)
 require 'fluent/plugin/decode_location/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "fluent-plugin-decode_loaction"
+  spec.name          = "fluent-plugin-decode_location"
   spec.version       = Fluent::DecodeLocation::VERSION
   spec.authors       = ["L. Srednicki"]
   spec.email         = ["lukasz@sredni.pl"]
